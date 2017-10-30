@@ -12,105 +12,112 @@ ___
 ### Update Linux Distrubution with latest updates
 ___
 
-- Login using providing information for default Amazon lightsail user 'ubuntu'
+1. Login using providing information for default Amazon lightsail user 'ubuntu'
 
-- Enter the following commands:
+2. Enter the following commands:
 
->$ sudo apt-get install updates
+    >$ sudo apt-get install updates
 
->$ sudo apt-get install upgrade
+    >$ sudo apt-get install upgrade
 
->$ reboot
+    >$ reboot
 
 ### Create User 'grader' with sudo permissions
 ___
+1. Enter the following to create user 'grader':
 
-> $ sudo adduser grader
+    > $ sudo adduser grader
 
-> $ sudo touch /etc/sudoers.d/grader
+    > $ sudo touch /etc/sudoers.d/grader
 
->$ sudo nano /etc/sudoer.d/grader
+    >$ sudo nano /etc/sudoer.d/grader
 
-- Append the following line:
-```
-grader ALL=(ALL) NOPASSWD:ALL
-```
-- Type 'ctrl-o' to save.
-- Type 'ctrl-x' to exit.
+2. Append the following line to the file:
+    ```
+    grader ALL=(ALL) NOPASSWD:ALL
+    ```
+3. Type 'ctrl-o' to save.
+4. Type 'ctrl-x' to exit.
 
 ### Setup ssh-key based ssh login
 ___
-- Generate SSH Key on local Machine:
->  $ ssh-keygen
+1. Enter the following to Generate SSH Key on local Machine:
+    >  $ ssh-keygen
 
-- Note the filename and location (I used the default that was created at .ssh/id_rsa)
-- Create passphrase for ssh key, (I created Passphrase: 'grader' for this instance)
+- Note the filename and file location used (I used the default that was created at .ssh/id_rsa)
+2. When prompted, create passphrase for ssh key (I created passphrase: 'grader' for this instance)
 
 ### Copy public key from local machine to virtual machine
 ___
 
-- Create directory for authorized ssh keys
+1. Create directory and file for authorized ssh keys
 
-> $ sudo mkdir .ssh
+    > $ sudo mkdir .ssh
 
-> $ touch .ssh/authorized_keys
+    > $ touch .ssh/authorized_keys
 
-> $ sudo nano .ssh/authorized_keys
+    > $ sudo nano .ssh/authorized_keys
 
-- Copy public key from local machine (this instance used: .ssh/id_rsa) and paste into .ssh/authorized_keys file on virtual machine
+2. Copy public key from local machine (this instance used: .ssh/id_rsa) and paste into .ssh/authorized_keys file on virtual machine
 
-> $ sudo chmod 700 .ssh
+    > $ sudo chmod 700 .ssh
 
-> $ sudo chmod 622 .ssh/authorized_keys
+    > $ sudo chmod 622 .ssh/authorized_keys
 
-> $ sudo service ssh restart
+    > $ sudo service ssh restart
 
-- Login Command Example from Local Machine:
+- Exampe of login command from Local Machine:
 > $ ssh -i .ssh/id_rsa grader@13.58.78.181
 
 ### Change SSH Port that Virtual Machine is listening for to 2200
 ___
-> $ sudo nano /etc/ssh/sshd_config
+1. Edit sshd config file:
+    > $ sudo nano /etc/ssh/sshd_config
 
--   Delete Port 22 line or make sure Port 22 line is commented out: '# Port 22'
--  Append 'Port 2200' to file
-```
-# What ports, IPs and protocols we listen for
-# Port 22
-Port 2200
-```
--  Type 'ctrl-o' to save.
-- Type 'ctrl-x' to exit.
+2.   Delete 'Port 22' line or make sure Port 22 line is commented out and Append 'Port 2200' to file like below:
+    ```
+    # What ports, IPs and protocols we listen for
+    # Port 22
+    Port 2200
+    ```
+3.  Type 'ctrl-o' to save.
+4. Type 'ctrl-x' to exit.
 
 ### Configure Uncomplicated Firewall
 ___
-> $ sudo ufw default deny incoming
+1. Enter the following commands to configure defaults:
 
-> $ sudo ufw default allow outgoing
+    > $ sudo ufw default deny incoming
 
-> $ sudo ufw allow 2200/tcp
+    > $ sudo ufw default allow outgoing
+2. Enter the following to allow only specified ports:
 
-> $ sudo ufw allow 80/tcp
+    > $ sudo ufw allow 2200/tcp
 
-> $ sudo ufw allow 123/udp
+    > $ sudo ufw allow 80/tcp
 
-> $ sudo ufw status
+    > $ sudo ufw allow 123/udp
+3. Enable Firewall and make sure port 22 is disabled:
 
-> $ sudo ufw enable
+    > $ sudo ufw status
 
-> $ sudo ufw deny 22
+    > $ sudo ufw enable
 
-> $ sudo service ufw restart
+    > $ sudo ufw deny 22
+
+    > $ sudo service ufw restart
 
 ### Configure Linux to use UTC timezone
 ___
+1. Open linux time zone configuration:
 > $ sudo dpkg-reconfigure tzdata
 
-- Navigate to and Select 'None of the Above'
--  Navigate to and Select 'UTC'
+2. Navigate to and Select 'None of the Above'
+3.  Navigate to and Select 'UTC'
 
 ### Apache and Python Mod-wsgi Configuration
 ___
+1. Install Apache and mod-wsgi
 
 > $ sudo apt-get install apache2
 
@@ -120,66 +127,81 @@ ___
 
 ### Install and Configure PostgreSQL database
 ___
-> $ sudo apt-get install postgresql
 
-> $ sudo -u postgres psql postgres
+1. Enter the following to install PostgreSQL
 
-> postgres=# CREATE DATABASE catalog;
+    > $ sudo apt-get install postgresql
 
-> postgres=# CREATE USER catalog;
+2. Create database user 'catalog'
 
-> postgres=# ALTER ROLE catalog with PASSWORD 'catalog';
+    > $ sudo -u postgres psql postgres
 
-> postgres=# GRANT ALL PRIVILEGES ON DATABASE catalog TO catalog;
+    > postgres=# CREATE DATABASE catalog;
 
-> postgres=# \q
+    > postgres=# CREATE USER catalog;
 
-> $ sudo pip install psycopg2
+    > postgres=# ALTER ROLE catalog with PASSWORD 'catalog';
+
+    > postgres=# GRANT ALL PRIVILEGES ON DATABASE catalog TO catalog;
+
+    > postgres=# \q
+
+3. Install pyscopg2 postgresql adapter
+    > $ sudo pip install psycopg2
 
 ### Install git, clone catalog app respository and configure postgresql database
 ___
+1. Install git
 
->  $ sudo apt-git install git
+    >  $ sudo apt-git install git
+2. Create main directory that server will use for serving application
 
-> $ sudo mkdir /var/www/catalog
+    > $ sudo mkdir /var/www/catalog
 
-> $ git clone https://github.com/jrmronquillo/item_catalog
+3.  Clone files from git repository to server
 
-> $ sudo mv catalog /var/www/catalog
+    > $ git clone https://github.com/jrmronquillo/item_catalog
 
-> $ cd /var/www/catalog
+4. Move these files to main directory
 
-- Edit project.py, database_setup.py to use postgresql database instead of sqlite
+    > $ sudo mv catalog /var/www/catalog
+
+    > $ cd /var/www/catalog
+
+5. Edit project.py, database_setup.py to use postgresql database instead of sqlite
 
 - Note: This configuration change has already been made in the repository
 
 - If app was cloned from https://github.com/jrmronquillo/item_catalog; the sqlite configuration is already commented out and replaced with postgresql as shown below:
-```
-# engine = create_engine('sqlite:///catalogwithusers.db')
-engine = create_engine(
-    'postgresql+psycopg2://catalog:catalog@localhost/catalog')
-```
+    ```
+    # engine = create_engine('sqlite:///catalogwithusers.db')
+    engine = create_engine(
+        'postgresql+psycopg2://catalog:catalog@localhost/catalog')
+    ```
 
 ### Install Catalog App Dependencies
 ___
+1. Install all frameworks that the application needs:
 
-> $ sudo pip install Flask
+    > $ sudo pip install Flask
 
-> $ sudo pip install SQLAlchemy
+    > $ sudo pip install SQLAlchemy
 
-> $ sudo pip install requests
+    > $ sudo pip install requests
 
-> $ sudo pip install --upgrade oauth2client
+    > $ sudo pip install --upgrade oauth2client
 
 ### Configure Apache to work with mod_wsgi
 ___
 
-> $ sudo nano /etc/apache2/sites-available/000-default.conf
+1. Edit the Apache configuration file:
+    > $ sudo nano /etc/apache2/sites-available/000-default.conf
 
-Edit the file with the following lines:
+2. Add the following lines:
 
-```
-<VirtualHost *:80>
+    ```
+
+    <VirtualHost *:80>
         ServerAdmin webmaster@localhost
         DocumentRoot /var/www/catalog/project.wsgi
 
@@ -197,47 +219,50 @@ Edit the file with the following lines:
         Allow from all
         </directory>
 
-</VirtualHost>
+    </VirtualHost>
 
-```
-Create wsgi file:
-> 2. $ sudo touch /var/www/catalog/project.wsgi
-> 3. $ sudo nano /var/www/catalog/project.wsgi
+    ```
 
-Append the following lines to the wsgi file:
+3. Create wsgi file:
+    > $ sudo touch /var/www/catalog/project.wsgi
 
-```
-import sys
+    >  $ sudo nano /var/www/catalog/project.wsgi
 
-sys.path.append('/var/www/catalog')
+4. Append the following lines to the wsgi file:
 
-from project import app as application
+    ```
+    import sys
+
+    sys.path.append('/var/www/catalog')
+
+    from project import app as application
 
 
-```
--  'ctrl-o' to save.
--  'ctrl-x' to exit.
+    ```
+5.  'ctrl-o' to save.
+6.  'ctrl-x' to exit.
 
 ### Modify app.secret_key location
 ___
 Move app.secret_key so that it becomes available to the app in the new wsgi configuration
 
-- Edit the project.py file and move the app.secret_key out of :
+1. Edit the project.py file and move the app.secret_key out of ...
 
-```
-if __name__ == '__main__':
+    ```
+    if __name__ == '__main__':
+        app.secret_key = 'super_secret_key1'
+        app.run()
+    ```
+- ...by moving it to the following line:
+    ```
+    app = Flask(__name__)
+
     app.secret_key = 'super_secret_key1'
-    app.run()
-```
-Move it to the following line:
-```
-app = Flask(__name__)
-
-app.secret_key = 'super_secret_key1'
-```
+    ```
 
 ### Deploy App
 ___
+1. Restart apache to activate application configurations
 > $ sudo service apache2 restart
 
 ## List of Third-Party Resources
