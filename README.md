@@ -55,7 +55,7 @@ ___
 ### Copy public key from local machine to virtual machine
 ___
 
-1. Create directory and file for authorized ssh keys
+1. On VPS, Create directory and file for authorized ssh keys
 
     > $ sudo mkdir .ssh
 
