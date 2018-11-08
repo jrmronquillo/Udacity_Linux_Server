@@ -111,7 +111,7 @@ ___
     > $ sudo ufw deny 22
 
     > $ sudo service ufw restart
-
+Note: If using Amazon Lightsail, Amazon also applies a firewall, need to make sure the same ports are enabled in the Amazon console as well.
 ### Configure Linux to use UTC timezone
 ___
 1. Open linux time zone configuration:
