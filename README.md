@@ -21,6 +21,11 @@ ___
     >$ sudo apt-get install upgrade
 
     >$ reboot
+    -----------
+    Edit: The above commands worked on legacy Ubuntu. The do not work on >=16.04, instead use the below:
+    >$ sudo apt update
+    >$ sudo apt upgrade
+    >$ reboot
 
 ### Create User 'grader' with sudo permissions
 ___
